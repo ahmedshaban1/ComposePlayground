@@ -6,17 +6,17 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Button
+import androidx.compose.material.Slider
 import androidx.compose.material.Text
-import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import androidx.work.*
 import coil.compose.rememberImagePainter
+import com.ahmed.composepayground.ui.ProfileHeader
 import com.ahmed.composepayground.ui.theme.ComposePaygroundTheme
 import com.ahmed.composepayground.workmanger.ColorFilterWorker
 import com.ahmed.composepayground.workmanger.DownloadWorker
@@ -25,7 +25,28 @@ import com.ahmed.composepayground.workmanger.WorkerKeys
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        val downloadRequest = OneTimeWorkRequestBuilder<DownloadWorker>().setConstraints(
+
+        /*
+      * Motion layout
+      * */
+        setContent {
+            ComposePaygroundTheme {
+                Column {
+                    var progress by remember {
+                        mutableStateOf(0f)
+                    }
+                    ProfileHeader(progress = progress)
+                    Spacer(modifier = Modifier.height(32.dp))
+                    Slider(value = progress, onValueChange = {progress = it}, modifier = Modifier.padding(32.dp))
+
+                }
+            }
+        }
+
+        /*
+        * work manager example
+        * */
+       /* val downloadRequest = OneTimeWorkRequestBuilder<DownloadWorker>().setConstraints(
             Constraints.Builder()
                 .build()
         ).build()
@@ -105,7 +126,7 @@ class MainActivity : ComponentActivity() {
 
                 }
             }
-        }
+        }*/
     }
 }
 
