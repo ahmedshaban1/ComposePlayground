@@ -4,20 +4,30 @@ import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.annotation.ColorRes
+import androidx.compose.animation.core.*
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.RadioButton
-import androidx.compose.material.Text
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowDropDown
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.datastore.dataStore
 import com.ahmed.composepayground.datastore.AppSettings
 import com.ahmed.composepayground.datastore.AppSettingsSerializer
 import com.ahmed.composepayground.datastore.Language
 import com.ahmed.composepayground.ui.theme.ComposePaygroundTheme
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 val Context.dataStore by dataStore(
@@ -36,7 +46,64 @@ class MainActivity : ComponentActivity() {
         setContent {
             //datastore
             ComposePaygroundTheme {
-                val appSettings by dataStore.data.collectAsState(initial = AppSettings())
+
+                val infiniteTransition = rememberInfiniteTransition()
+                val angle by infiniteTransition.animateFloat(
+                    initialValue = 0F,
+                    targetValue = 360F,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(2000, easing = LinearEasing)
+                    )
+                )
+
+
+
+                Scaffold(Modifier.fillMaxSize()) {
+                    val anglePerSecond = (360*2)/360
+                    var currentAngle by remember { mutableStateOf(360f) }
+                    val scope = rememberCoroutineScope()
+                    LaunchedEffect(key1 = false){
+                        scope.launch {
+                            while (true){
+                                delay(1000)
+                                currentAngle -= anglePerSecond
+                            }
+                        }
+                    }
+
+                    val angle2: Float by animateFloatAsState(
+                        targetValue = currentAngle ,
+                        animationSpec = tween(
+                            durationMillis = 2000, // duration
+                            easing = FastOutSlowInEasing
+                        ),
+                        finishedListener = {
+                            // disable the button
+                        }
+                    )
+
+                    Column() {
+                        Button(onClick = {
+
+                        }) {
+                            Text(text = "Rotate")
+                        }
+                    }
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center){
+                        Box(modifier = Modifier
+                            .size(150.dp)
+                            .background(Color.Blue, shape = CircleShape)
+                            .rotate(angle2)
+                            /*.graphicsLayer {
+                                rotationZ = angle
+                            }*/, contentAlignment = Alignment.TopCenter){
+                           Icon(Icons.Filled.ArrowDropDown, contentDescription ="" , modifier = Modifier.size(20.dp))
+                        }
+                    }
+
+                }
+
+             /*   val appSettings by dataStore.data.collectAsState(initial = AppSettings())
                 val scope = rememberCoroutineScope()
                 Column(
                     Modifier.fillMaxSize(),
@@ -58,7 +125,7 @@ class MainActivity : ComponentActivity() {
 
                 }
 
-            }
+            }*/
             //motionlayout
             /*
             ComposePaygroundTheme {
@@ -70,8 +137,8 @@ class MainActivity : ComponentActivity() {
                     Spacer(modifier = Modifier.height(32.dp))
                     Slider(value = progress, onValueChange = {progress = it}, modifier = Modifier.padding(32.dp))
 
-                }
-            }*/
+                }*/
+            }
         }
 
         /*
