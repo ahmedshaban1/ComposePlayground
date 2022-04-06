@@ -61,10 +61,13 @@ class MainActivity : ComponentActivity() {
                 Scaffold(Modifier.fillMaxSize()) {
                     val anglePerSecond = (360*2)/360
                     var currentAngle by remember { mutableStateOf(360f) }
+                    var isRunning by remember {
+                        mutableStateOf(true)
+                    }
                     val scope = rememberCoroutineScope()
-                    LaunchedEffect(key1 = false){
+                    LaunchedEffect(key1 = isRunning){
                         scope.launch {
-                            while (true){
+                            while (isRunning){
                                 delay(1000)
                                 currentAngle -= anglePerSecond
                             }
@@ -84,7 +87,7 @@ class MainActivity : ComponentActivity() {
 
                     Column() {
                         Button(onClick = {
-
+                            isRunning = !isRunning
                         }) {
                             Text(text = "Rotate")
                         }
